@@ -29,15 +29,51 @@ export function ContactSection() {
         body: JSON.stringify(formData)
       });
 
-      const result = await response.json();
+      const responseText = await response.text();
+      let result: Record<string, unknown> = {};
+
+      try {
+        result = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        console.error('Contact form response parse error', {
+          parseError,
+          status: response.status,
+          responseText,
+        });
+      }
 
       if (!response.ok) {
+        console.error('Contact form request failed', {
+          status: response.status,
+          statusText: response.statusText,
+          response: result,
+          submittedFields: {
+            namePresent: Boolean(formData.name),
+            emailPresent: Boolean(formData.email),
+            phonePresent: Boolean(formData.phone),
+            messagePresent: Boolean(formData.message),
+          },
+        });
         throw new Error(result.error || 'Failed to send message.');
       }
+
+      console.log('Contact form request succeeded', {
+        status: response.status,
+        response: result,
+      });
 
       alert('Thank you for your inquiry! We will contact you shortly.');
       setFormData({ name: '', email: '', phone: '', message: '' });
     } catch (error) {
+      console.error('Contact form submit error', {
+        error,
+        submittedFields: {
+          namePresent: Boolean(formData.name),
+          emailPresent: Boolean(formData.email),
+          phonePresent: Boolean(formData.phone),
+          messagePresent: Boolean(formData.message),
+        },
+      });
       const message = error instanceof Error ? error.message : 'Failed to send message.';
       alert(message);
     } finally {
