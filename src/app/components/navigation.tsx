@@ -94,34 +94,35 @@ export function Navigation() {
       </motion.nav>
 
       {/* Mobile Menu */}
-      <motion.div
-        initial={false}
-        animate={{
-          x: isMobileMenuOpen ? 0 : '100%',
-        }}
-        transition={{ type: 'spring', damping: 20 }}
-        className="fixed top-0 right-0 bottom-0 w-full md:hidden bg-white z-40 shadow-2xl"
-      >
-        <div className="pt-24 px-6">
-          <div className="flex flex-col gap-6">
-            {navLinks.map((link) => (
+      {isMobileMenuOpen && (
+        <motion.div
+          initial={{ x: '100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '100%' }}
+          transition={{ type: 'spring', damping: 20 }}
+          className="fixed top-0 right-0 bottom-0 w-full md:hidden bg-white z-40 shadow-2xl"
+        >
+          <div className="pt-24 px-6">
+            <div className="flex flex-col gap-6">
+              {navLinks.map((link) => (
+                <button
+                  key={link.name}
+                  onClick={() => scrollToSection(link.href)}
+                  className="text-left text-2xl text-[#0A1A2F] hover:text-[#D4AF37] transition-colors py-3 border-b border-gray-100"
+                >
+                  {link.name}
+                </button>
+              ))}
               <button
-                key={link.name}
-                onClick={() => scrollToSection(link.href)}
-                className="text-left text-2xl text-[#0A1A2F] hover:text-[#D4AF37] transition-colors py-3 border-b border-gray-100"
+                onClick={() => scrollToSection('contact')}
+                className="mt-4 px-8 py-4 bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-[#0A1A2F] rounded-full text-center shadow-lg"
               >
-                {link.name}
+                Get Started
               </button>
-            ))}
-            <button
-              onClick={() => scrollToSection('contact')}
-              className="mt-4 px-8 py-4 bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-[#0A1A2F] rounded-full text-center shadow-lg"
-            >
-              Get Started
-            </button>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
     </>
   );
 }

@@ -13,12 +13,36 @@ export function ContactSection() {
     phone: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Form submission logic would go here
-    alert('Thank you for your inquiry! We will contact you shortly.');
-    setFormData({ name: '', email: '', phone: '', message: '' });
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send message.');
+      }
+
+      alert('Thank you for your inquiry! We will contact you shortly.');
+      setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to send message.';
+      alert(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleWhatsApp = () => {
@@ -102,12 +126,13 @@ export function ContactSection() {
 
               <motion.button
                 type="submit"
+                disabled={isSubmitting}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-8 py-4 bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-[#0A1A2F] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                className="w-full px-8 py-4 bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-[#0A1A2F] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 <Send className="w-5 h-5" />
-                Send Message
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </motion.button>
             </form>
           </motion.div>
