@@ -47,7 +47,34 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
 
     const { name, email, phone, message } = req.body ?? {};
 
+    console.log('Contact form request received', {
+      method: req.method,
+      fields: {
+        namePresent: Boolean(name),
+        emailPresent: Boolean(email),
+        phonePresent: Boolean(phone),
+        messagePresent: Boolean(message),
+      },
+      smtpConfig: {
+        hostPresent: Boolean(smtpHost),
+        hostValue: smtpHost || null,
+        port: smtpPort,
+        userPresent: Boolean(smtpUser),
+        passPresent: Boolean(smtpPass),
+        fromPresent: Boolean(contactFromEmail),
+        toPresent: Boolean(contactToEmail),
+      },
+    });
+
     if (!name || !email || !message) {
+      console.error('Contact form validation failed', {
+        fields: {
+          namePresent: Boolean(name),
+          emailPresent: Boolean(email),
+          phonePresent: Boolean(phone),
+          messagePresent: Boolean(message),
+        },
+      });
       return res.status(400).json({ error: 'Name, email, and message are required.' });
     }
 
@@ -83,7 +110,11 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
 
     return res.status(200).json({ ok: true });
   } catch (error) {
-    console.error('Contact form email error:', error);
+    console.error('Contact form email error', {
+      error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
 
     const message =
       error instanceof Error ? error.message : 'Failed to send email.';
