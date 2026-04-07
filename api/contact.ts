@@ -34,13 +34,13 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
   }
 
   try {
-    const smtpHost = 'smtp.titan.email';
-    const smtpPort = 465;
+    const smtpHost = process.env.SMTP_HOST;
+     const smtpPort = Number(process.env.SMTP_PORT || 465);
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
     const contactToEmail = process.env.CONTACT_TO_EMAIL || smtpUser;
     const contactFromEmail = process.env.CONTACT_FROM_EMAIL || smtpUser;
-    const secure = true;
+    const secure = smtpPort === 465;
 
     if (!smtpHost || !smtpUser || !smtpPass || !contactToEmail || !contactFromEmail) {
       console.error('Contact form config validation failed', {
