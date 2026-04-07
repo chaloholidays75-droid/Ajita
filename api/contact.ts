@@ -83,6 +83,8 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
 
     return res.status(200).json({ ok: true });
   } catch (error) {
+    console.error('Contact form email error:', error);
+
     const message =
       error instanceof Error ? error.message : 'Failed to send email.';
 
