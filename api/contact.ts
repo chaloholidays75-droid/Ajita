@@ -40,8 +40,21 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
     const smtpPass = process.env.SMTP_PASS;
     const contactToEmail = process.env.CONTACT_TO_EMAIL || smtpUser;
     const contactFromEmail = process.env.CONTACT_FROM_EMAIL || smtpUser;
+    const secure = smtpPort === 465;
 
     if (!smtpHost || !smtpUser || !smtpPass || !contactToEmail || !contactFromEmail) {
+      console.error('Contact form config validation failed', {
+        smtpConfig: {
+          hostPresent: Boolean(smtpHost),
+          hostValue: smtpHost || null,
+          port: smtpPort,
+          secure,
+          userPresent: Boolean(smtpUser),
+          passPresent: Boolean(smtpPass),
+          fromPresent: Boolean(contactFromEmail),
+          toPresent: Boolean(contactToEmail),
+        },
+      });
       return res.status(500).json({ error: 'Email service is not configured.' });
     }
 
@@ -59,10 +72,14 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
         hostPresent: Boolean(smtpHost),
         hostValue: smtpHost || null,
         port: smtpPort,
+        secure,
+        userValue: smtpUser,
         userPresent: Boolean(smtpUser),
         passPresent: Boolean(smtpPass),
         fromPresent: Boolean(contactFromEmail),
+        fromValue: contactFromEmail,
         toPresent: Boolean(contactToEmail),
+        toValue: contactToEmail,
       },
     });
 
@@ -86,13 +103,54 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
     const transporter = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
-      secure: smtpPort === 465,
+      secure,
       auth: {
         user: smtpUser,
         pass: smtpPass,
       },
     });
 
+    console.log('Contact form SMTP verify starting', {
+      smtpConfig: {
+        host: smtpHost,
+        port: smtpPort,
+        secure,
+        user: smtpUser,
+        from: contactFromEmail,
+        to: contactToEmail,
+      },
+    });
+
+    try {
+      await transporter.verify();
+      console.log('Contact form SMTP verify succeeded', {
+        smtpConfig: {
+          host: smtpHost,
+          port: smtpPort,
+          secure,
+          user: smtpUser,
+        },
+      });
+    } catch (verifyError) {
+      console.error('Contact form SMTP verify failed', {
+        smtpConfig: {
+          host: smtpHost,
+          port: smtpPort,
+          secure,
+          user: smtpUser,
+          from: contactFromEmail,
+          to: contactToEmail,
+        },
+        error: verifyError,
+        message: verifyError instanceof Error ? verifyError.message : 'Unknown verify error',
+        stack: verifyError instanceof Error ? verifyError.stack : undefined,
+      });
+      throw verifyError;
+    }
+
+    console.log('Contact form sendMail starting', {
+      subject: `New Contact Form Submission from ${name}`,
+    });
     await transporter.sendMail({
       from: contactFromEmail,
       to: contactToEmail,
@@ -106,6 +164,11 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
         <p><strong>Message:</strong></p>
         <p>${safeMessage}</p>
       `,
+    });
+    console.log('Contact form sendMail succeeded', {
+      to: contactToEmail,
+      from: contactFromEmail,
+      replyTo: email,
     });
 
     return res.status(200).json({ ok: true });
