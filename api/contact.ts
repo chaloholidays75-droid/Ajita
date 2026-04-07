@@ -4,7 +4,6 @@ import nodemailer from 'nodemailer';
 type ContactPayload = {
   name?: string;
   email?: string;
-  phone?: string;
   message?: string;
 };
 
@@ -58,14 +57,13 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
       return res.status(500).json({ error: 'Email service is not configured.' });
     }
 
-    const { name, email, phone, message } = req.body ?? {};
+    const { name, email, message } = req.body ?? {};
 
     console.log('Contact form request received', {
       method: req.method,
       fields: {
         namePresent: Boolean(name),
         emailPresent: Boolean(email),
-        phonePresent: Boolean(phone),
         messagePresent: Boolean(message),
       },
       smtpConfig: {
@@ -88,7 +86,6 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
         fields: {
           namePresent: Boolean(name),
           emailPresent: Boolean(email),
-          phonePresent: Boolean(phone),
           messagePresent: Boolean(message),
         },
       });
@@ -97,7 +94,6 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
 
     const safeName = escapeHtml(name);
     const safeEmail = escapeHtml(email);
-    const safePhone = escapeHtml(phone || 'N/A');
     const safeMessage = escapeHtml(message).replace(/\n/g, '<br />');
 
     const transporter = nodemailer.createTransport({
@@ -170,7 +166,6 @@ export default async function handler(req: VercelRequestLike, res: VercelRespons
         <h2>New Contact Inquiry</h2>
         <p><strong>Name:</strong> ${safeName}</p>
         <p><strong>Email:</strong> ${safeEmail}</p>
-        <p><strong>Phone:</strong> ${safePhone}</p>
         <p><strong>Message:</strong></p>
         <p>${safeMessage}</p>
       `,

@@ -10,7 +10,6 @@ export function ContactSection() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,14 +62,13 @@ export function ContactSection() {
       });
 
       alert('Thank you for your inquiry! We will contact you shortly.');
-      setFormData({ name: '', email: '', phone: '', message: '' });
+      setFormData({ name: '', email: '', message: '' });
     } catch (error) {
       console.error('Contact form submit error', {
         error,
         submittedFields: {
           namePresent: Boolean(formData.name),
           emailPresent: Boolean(formData.email),
-          phonePresent: Boolean(formData.phone),
           messagePresent: Boolean(formData.message),
         },
       });
@@ -121,7 +119,7 @@ export function ContactSection() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   className="w-full px-6 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all"
-                  placeholder="John Doe"
+                  placeholder="Enter your full name"
                 />
               </div>
 
@@ -133,18 +131,7 @@ export function ContactSection() {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
                   className="w-full px-6 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all"
-                  placeholder="john@example.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[#0A1A2F] mb-2 text-sm">Phone Number</label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-6 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all"
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="Enter your professional email address"
                 />
               </div>
 
@@ -156,7 +143,7 @@ export function ContactSection() {
                   required
                   rows={5}
                   className="w-full px-6 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all resize-none"
-                  placeholder="Tell us about your travel plans..."
+                  placeholder="Briefly describe your travel, visa, or international service requirements"
                 />
               </div>
 
