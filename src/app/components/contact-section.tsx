@@ -49,6 +49,7 @@ export function ContactSection() {
           submittedFields: {
             namePresent: Boolean(formData.name),
             emailPresent: Boolean(formData.email),
+            phonePresent: Boolean(formData.phone),
             messagePresent: Boolean(formData.message),
           },
         });
@@ -188,7 +189,7 @@ export function ContactSection() {
                   </div>
                   <div>
                     <h4 className="text-[#0A1A2F] mb-1">Phone</h4>
-                    <p className="text-gray-600">+44 7584 321818</p>
+                    <p className="text-gray-600">+91 92654 11743</p>
                   </div>
                 </div>
 
