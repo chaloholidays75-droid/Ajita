@@ -49,11 +49,10 @@ export function ContactSection() {
           submittedFields: {
             namePresent: Boolean(formData.name),
             emailPresent: Boolean(formData.email),
-            phonePresent: Boolean(formData.phone),
             messagePresent: Boolean(formData.message),
           },
         });
-        throw new Error(result.error || 'Failed to send message.');
+        throw new Error(typeof result.error === 'string' ? result.error : 'Failed to send message.');
       }
 
       console.log('Contact form request succeeded', {
