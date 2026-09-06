@@ -49,7 +49,7 @@ export function ContactSection() {
           submittedFields: {
             namePresent: Boolean(formData.name),
             emailPresent: Boolean(formData.email),
-            phonePresent: Boolean(formData.phone),
+            
             messagePresent: Boolean(formData.message),
           },
         });
